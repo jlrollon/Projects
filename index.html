@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% block header %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+{% endblock %}
+{% block content %}
+
+  <div class="container">
+    <p style="font-size: 2rem;">👋🏼Welcome!</p>
+    <p style="font-size: 22px; font-weight: 100;">Python mysql "crud" using Flask.</p><br><br>
+    <a href="{{ url_for('login')}}" type="button" class="button btn-lg mt-5">Login</a>
+  </div>
+
+{% endblock %}

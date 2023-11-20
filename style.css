@@ -1,0 +1,32 @@
+body {
+    height: 100vh;
+    width: 100%;
+    display: grid;
+    place-items: center;
+}
+
+.container {
+    text-align: center;
+}
+
+.button {
+    padding: 10px 35px;
+    color: #ffffff;
+    background: #42855B !important;
+    font-size: 20px;
+    border-radius: 5px !important;
+    border: none;
+    text-decoration: none;
+}
+
+/* This is for dashboard styling */
+.p-absolute {
+    position: absolute;
+    bottom: 1em;
+}
+
+@media (width < 524px){
+	.card {
+		width: 90vw !important;
+	}
+}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block header %}
+<link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+{% endblock %}
+{% block content %}
+
+    <div class="card p-5" style="width: 25vw;">
+        <form action="" method = "POST">
+            <h3 class="d-flex justify-content-center">User Login</h3>
+            <br>
+            <div class="form-floating mb-3 mt-3">
+                <input type="text" class="form-control user-input" placeholder="Enter username" name="username" required>
+                <label for="username" class="d-flex justify-content-start">Username</label>
+            </div>
+            <div class="form-floating mb-3 mt-3">
+                <input type="password" class="form-control pass-input" placeholder="Enter password" name="password" required>
+                <label for="username" class="d-flex justify-content-start">Password</label>
+            </div>
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    {% for message in messages %}
+                            <p style="font-size: 20px; color: #ff0000;">{{ message }}</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            <button type="submit" class="button btn-lg mt-5">Submit</button>
+        </form>
+    </div>
+
+{% endblock %}

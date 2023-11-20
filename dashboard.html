@@ -1,0 +1,271 @@
+{% extends 'base.html' %}
+{% block header %}
+
+<style>
+
+.button {
+  padding: 10px 35px;
+  color: #ffffff;
+  background: #42855B !important;
+  font-size: 20px;
+  border-radius: 5px !important;
+  border: none;
+  text-decoration: none;
+}
+.save-btn, .btn {
+  padding: 10px 1.6rem; 
+  background: #007bff; 
+  color: #fff; 
+  font-weight: bolder;
+  border: none;
+  border-radius: 3px;
+}
+
+.close-btn {
+  padding: 10px 1.6rem; 
+  color: #252525;
+  border: 1px solid rgba(150,150,150,0.4);
+  font-weight: bolder;
+  border: none;
+  border-radius: 3px;
+}
+
+p {
+  font-size: 32px;
+}
+
+footer p{
+  font-size: 20px !important;
+}
+table,tr,th {
+  border: 1px solid;
+}
+
+header li {
+  list-style: none;
+}
+
+.card-header {
+  width: 100%;
+  align-items: center;
+}
+
+.open-modal,
+.open-update-modal {
+  display: none;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 5;
+  background: rgba(0,0,0,0.5);
+}
+
+.txt {
+  font-size: 22px;
+  font-weight: 100;
+}
+
+.msg-box {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  text-align: center;
+}
+
+.save-msg {
+  font-size: 16px; 
+  padding: 15px; 
+  background: #42855B; 
+  color: #ffffff;
+  border-radius: 5px;
+  margin-top: 13px;
+}
+
+.no-data {
+  font-size: 16px;
+  font-family: LatoWeb, "Lato Extended", Lato, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.table-body {
+  overflow-y: auto; 
+  width: 100%; 
+  max-height: 15em; 
+  box-shadow: 0 1px 2px rgba(150,150,150,0.4);
+}
+
+@media (max-width: 720px) {
+  .table-body {
+    overflow-x: auto;
+  }
+
+  td {
+    vertical-align: middle;
+  }
+  tr {
+    padding: 0;
+  }
+
+}
+
+  </style>
+
+  <script src="{{ url_for('static', filename='py.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="msg-box">
+        <br><br>
+          <span class="save-msg">
+            <i class="fa-solid fa-circle-check"></i> {{message}}
+          </span>
+      </div>      
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<header class="d-flex justify-content-end mt-5">
+  <li class="nav-item dropdown">
+    <a class="nav-link dropdown-toggle second-text fw-bold" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+      <i class="fas fa-user me-2"></i>{{ name }}
+    </a>
+    <ul class="dropdown-menu">
+      <li>
+          <a class="dropdown-item" href="{{ url_for('logout')}}" style="color: tomato; font-weight: 600;">Logout</a>
+      </li>
+    </ul>
+  </li>
+</header>
+
+      <div class="card card-outline" style="margin-top: 3rem; border-top: 3px solid #42855B !important; max-height: 30em;">
+          <div class="card-header d-flex justify-content-between">
+            <span style="font-family: sans-serif; font-weight: 700;">
+              <h2>Student List</h2>
+            </span>
+            <button onclick="modal()" class="btn btn-block btn-sm" style="background: #F0F0F0; border: 1px solid rgba(200,200,200,0.3); height: 40px; vertical-align: center;">
+              <i class="fa fa-plus"></i> Add Student
+            </button>
+          </div>
+        <div class="card-body">
+          <div class="table-body">
+            {% if data %}
+              <table class="table table-striped" id="table">
+                <thead class="table-success">
+                  <tr>
+                    {% for column in data_desc %}
+                      <th>{{ column.0 }}</th>
+                    {% endfor %}
+                      <th>ACTION</th>
+                </tr>
+                </thead>
+                <tbody>
+                  {% for row in data %}
+                    <tr>
+                      {% for i in range(row|length) %}
+                        <td>{{ row[i] }}</td>
+                      {% endfor %}
+                      <td>
+                        <button type="button" class="btn btn-primary" onclick="updateRow()">
+                          <i class="fa-solid fa-pencil"></i>
+                        </button>
+                        <a href="{{ url_for('delete',idno=row.0) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete?')">
+                          <i class="fas fa-trash"></i>
+                        </a>
+                      </td>
+                    </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            {% else %}
+                <p>
+                  {% with messages = get_flashed_messages() %}
+                    {% if messages %}
+                      {% for message in messages %}
+                        <p style="font-size: 20px;">{{message}}</p>
+                      {% endfor %}
+                    {% endif %}
+                  {% endwith %}
+                </p>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+
+  <!-- Modal for Add Student Record -->
+  <div class="open-modal">
+    <div class="card p-5" style="width:500px; margin: 5rem auto;">
+      <form action = "{{ url_for('insert')}}" method = "POST">
+          <h3 class="d-flex justify-content-center">Add New Student</h3>
+          <br>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control user-input" placeholder="Enter idno" name="idno" required>
+            <label for="username">ID Number</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control pass-input" placeholder="Enter lastname" name="lname" required>
+            <label for="username">Lastname</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control pass-input" placeholder="Enter firstname" name="fname" required>
+            <label for="username">Firstname</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control pass-input" placeholder="Enter course" name="course" required>
+            <label for="username">Course</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control pass-input" placeholder="Enter level" name="level" required>
+              <label for="username">Level</label>
+          </div>
+          <input type="submit" class="save-btn btn-lg mt-5" value="Submit"></input>
+          <input type="button" class="close-btn btn-lg mt-5" onclick="closeModal()" value="Close">
+      </form>
+    </div>
+  </div>
+
+  <!-- Modal for Update Student Record -->
+  <div class="open-update-modal">
+    <div class="card p-5" style="width:500px; margin: 5rem auto;">
+      <form action = "{{ url_for('update')}}" method = "POST">
+          <h3 class="d-flex justify-content-center">Update Record</h3>
+          <br>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control user-input" placeholder="Enter idno" name="idno" required>
+            <label for="username">ID Number</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control pass-input" placeholder="Enter lastname" name="lname" required>
+            <label for="username">Lastname</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control pass-input" placeholder="Enter firstname" name="fname" required>
+            <label for="username">Firstname</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control pass-input" placeholder="Enter course" name="course" required>
+            <label for="username">Course</label>
+          </div>
+          <div class="form-floating mb-3">
+            <input type="text" class="form-control pass-input" placeholder="Enter level" name="level" required>
+              <label for="username">Level</label>
+          </div>
+          <input type="submit" class="save-btn btn-lg mt-5" value="Submit"></input>
+          <input type="button" class="close-btn btn-lg mt-5" onclick="closeModal()" value="Close">
+      </form>
+    </div>
+  </div>
+
+{% endblock %}
+
+{% block footer %}
+<hr>
+  <footer>
+    <p> Rollon, John Lawrence &copy; Copyright 2023</p>
+  </footer>
+{% endblock %}
